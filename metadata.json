@@ -1,0 +1,6 @@
+{
+  "name": "MÈSI Lagos",
+  "description": "A luxury, modern, editorial-style digital experience for MÈSI Lagos, an upscale all-day social dining restaurant in Lekki Phase 1, Lagos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
