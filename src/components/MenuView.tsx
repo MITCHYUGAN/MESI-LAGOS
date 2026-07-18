@@ -212,7 +212,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
             {/* Custom Interactive Floating "Pre-select Feast" Box */}
             <div className="border-t border-black/15 pt-6 flex flex-col gap-4">
               <div className="flex justify-between items-center text-xs font-mono">
-                <span className="text-black/50 tracking-wider">YOUR SOCIAL FEAST</span>
+                <span className="text-black/50 tracking-wider">MY TABLE</span>
                 <span className="font-bold text-[#055734]">{totalQuantity} ITEMS</span>
               </div>
               <button
@@ -221,7 +221,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                 className="w-full bg-[#E6DCD6] hover:bg-[#E6DCD6]/85 text-[#055734] py-3 text-center text-xs font-mono tracking-widest uppercase font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>VIEW MY FEAST (${feastTotal})</span>
+                <span>VIEW MY TABLE (₦{feastTotal.toLocaleString()})</span>
               </button>
             </div>
           </div>

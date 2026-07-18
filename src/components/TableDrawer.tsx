@@ -57,7 +57,7 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
               <div className="p-6 border-b border-black/10 flex justify-between items-center bg-[#E6DCD6]/30">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-[#055734]" />
-                  <span className="font-serif text-lg font-bold text-black tracking-tight">My Table ⭐</span>
+                  <span className="font-serif text-lg font-bold text-black tracking-tight">MY TABLE</span>
                 </div>
                 <button 
                   onClick={onClose}
@@ -143,17 +143,17 @@ export const TableDrawer: React.FC<TableDrawerProps> = ({
                   <div className="flex flex-col gap-2 mt-2">
                     <button
                       onClick={onContinueToReservation}
-                      className="w-full bg-[#055734] text-white hover:bg-black py-4 text-center text-xs font-mono tracking-widest uppercase font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="cursor-pointer w-full bg-[#055734] text-white hover:bg-black py-4 text-center text-xs font-mono tracking-widest uppercase font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <span>ATTACH TO RESERVATION</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                     <button
                       onClick={onInquireWhatsApp}
-                      className="w-full border border-black/35 hover:border-black text-black py-4 text-center text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 transition-colors"
+                      className="cursor-pointer w-full border border-black/35 hover:border-black text-black py-4 text-center text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 transition-colors"
                     >
                       <MessageCircle className="w-4 h-4 text-[#055734]" />
-                      <span>INQUIRE VIA WHATSAPP CONCIERGE</span>
+                      <span>ORDER ON WHATSAPP</span>
                     </button>
                   </div>
                 </div>

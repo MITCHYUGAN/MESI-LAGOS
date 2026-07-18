@@ -311,14 +311,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab }) => {
                 <Calendar className="w-4 h-4" />
                 <span>BOOK RESERVATION</span>
               </button>
-              <a
+              {/* <a
                 href="https://wa.me/2349159999368"
                 target="_blank"
                 rel="noreferrer"
                 className="border border-black/25 text-black hover:border-[#055734] hover:text-[#055734] px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase transition-all duration-300"
               >
-                WHATSAPP CONCIERGE
-              </a>
+                REACH OUT ON WHATSAPP
+              </a> */}
             </div>
             <p className="text-[11px] font-mono tracking-widest text-black/40 mt-6 uppercase">
               NO RESERVATION FEE • CANCEL UP TO 2 HOURS PRIOR

@@ -103,7 +103,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
       ? `\n🍽️ *Attached Social Feast:* \n${preSelectedItems.map(p => `  - ${p.quantity}x ${p.item.name} ${p.selectedOption ? `(${p.selectedOption})` : ''}`).join('\n')}\n  *Estimated Total:* $${feastTotal}`
       : '\n(No pre-selected menu items attached)';
 
-    const text = `Hello MÈSI Lagos Concierge,
+    const text = `Hello MÈSI Lagos,
 
 I would like to confirm my table reservation:
 *Confirmation Code:* ${bookingCode}
@@ -583,7 +583,7 @@ Please let me know if any pre-payment is required. Looking forward to slow dinin
                   className="bg-[#055734] text-white hover:bg-[#055734]/90 px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Send Reservation via WhatsApp</span>
+                  <span>Sync with WhatsApp</span>
                 </button>
                 <button
                   onClick={() => {

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { GALLERY_ITEMS } from '../data';
 import { GalleryItem } from '../types';
 import { PageTransition } from './PageTransition';

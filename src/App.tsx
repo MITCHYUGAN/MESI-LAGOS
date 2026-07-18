@@ -83,16 +83,17 @@ export default function App() {
       `• ${p.quantity} × ${p.item.name}${p.selectedOption ? ` (${p.selectedOption})` : ''} — ₦${(p.item.price * p.quantity).toLocaleString()}`
     ).join('\n');
     const text = `Hello MÈSI Lagos,
-I've selected a few dishes that caught my attention on your menu, and I would love to make a reservation:
+I've selected a few dishes that caught my attention, I would love to place an order:
 
 My Table Selections:
 ${listText}
 
 Estimated Total: ₦${feastTotal.toLocaleString()}
 
-I'd appreciate it if you could confirm availability, and advise if any special pairings or options would complement this selection.
+Name: [Customer(YOU) fills this] 
+Address: [Customer(YOU) fills this]
 
-Looking forward to our dining experience. Thank you!`;
+Thank you!`;
     const message = encodeURIComponent(text);
     window.open(`https://wa.me/2349159999368?text=${message}`, '_blank');
   };
