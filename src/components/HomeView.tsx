@@ -228,7 +228,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab }) => {
                           </span>
                         ))}
                       </div>
-                      <span className="font-mono text-sm text-[#055734] font-semibold">${item.price}</span>
+                      <span className="font-mono text-sm text-[#055734] font-semibold">₦{item.price.toLocaleString()}</span>
                     </div>
 
                     <div className="my-6">
@@ -257,7 +257,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ setActiveTab }) => {
       <section className="py-24 bg-[#E6DCD6]/25 px-6 border-b border-black/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <span className="text-xs font-mono tracking-[0.3em] text-[#055734] uppercase mb-2 block font-semibold">GUEST REVIEWS</span>
+            <span className="text-xs font-mono tracking-[0.3em] text-[#055734] uppercase mb-2 block font-semibold">REVIEWS</span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-black">
               What the guests say
             </h2>

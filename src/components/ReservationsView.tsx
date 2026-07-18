@@ -397,7 +397,7 @@ Please let me know if any pre-payment is required. Looking forward to slow dinin
                       type="submit"
                       className="flex-1 bg-[#055734] text-white hover:bg-black py-4 text-xs font-mono tracking-widest uppercase transition-colors flex items-center justify-center gap-2"
                     >
-                      <span>CONFIRM TABLE</span>
+                      <span>Reserve My Table</span>
                       <CheckCircle className="w-4 h-4" />
                     </button>
                   </div>
@@ -483,14 +483,14 @@ Please let me know if any pre-payment is required. Looking forward to slow dinin
                             <span className="font-semibold">{p.quantity}x</span> {p.item.name}
                             {p.selectedOption && <p className="text-[9px] font-mono text-black/40">({p.selectedOption})</p>}
                           </div>
-                          <span className="font-mono text-[10px] text-black/50 shrink-0">${p.item.price * p.quantity}</span>
+                          <span className="font-mono text-[10px] text-black/50 shrink-0">₦{(p.item.price * p.quantity).toLocaleString()}</span>
                         </div>
                       ))}
                     </div>
 
                     <div className="pt-4 border-t border-black/15 flex justify-between items-center text-xs font-mono font-semibold">
                       <span className="text-black/50">FEAST TOTAL:</span>
-                      <span className="text-[#055734]">${feastTotal}</span>
+                      <span className="text-[#055734]">₦{feastTotal.toLocaleString()}</span>
                     </div>
 
                     <button
@@ -561,12 +561,12 @@ Please let me know if any pre-payment is required. Looking forward to slow dinin
                   {preSelectedItems.map(p => (
                     <div key={p.item.id} className="flex justify-between text-xs font-serif text-black/80">
                       <span>{p.quantity}x {p.item.name} {p.selectedOption ? `(${p.selectedOption})` : ''}</span>
-                      <span className="font-mono text-black/50">${p.item.price * p.quantity}</span>
+                      <span className="font-mono text-black/50">₦{(p.item.price * p.quantity).toLocaleString()}</span>
                     </div>
                   ))}
                   <div className="flex justify-between font-mono text-xs font-bold text-[#055734] pt-3 mt-1 border-t border-black/5">
                     <span>ESTIMATED FEAST TOTAL:</span>
-                    <span>${feastTotal}</span>
+                    <span>₦{feastTotal.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -583,7 +583,7 @@ Please let me know if any pre-payment is required. Looking forward to slow dinin
                   className="bg-[#055734] text-white hover:bg-[#055734]/90 px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>SYNC WITH WHATSAPP</span>
+                  <span>Send Reservation via WhatsApp</span>
                 </button>
                 <button
                   onClick={() => {

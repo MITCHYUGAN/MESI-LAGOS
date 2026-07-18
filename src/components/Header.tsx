@@ -4,26 +4,31 @@
  */
 
 import React, { useState } from 'react';
-import { Menu, X, ArrowUpRight, MessageCircle } from 'lucide-react';
+import { Menu, X, ArrowUpRight, MessageCircle, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  preSelectedCount: number;
+  onOpenTableDrawer: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  activeTab, 
+  setActiveTab, 
+  preSelectedCount, 
+  onOpenTableDrawer 
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { id: 'home', label: 'Home' },
-    { id: 'menu', label: 'The Menu' },
-    { id: 'reservations', label: 'Reservations' },
-    { id: 'experiences', label: 'Experiences' },
+    { id: 'menu', label: 'Menu' },
     { id: 'gallery', label: 'Gallery' },
-    { id: 'private-dining', label: 'Private Dining' },
-    { id: 'about', label: 'Our Story' },
+    { id: 'reservations', label: 'Reservation' },
     { id: 'journal', label: 'Journal' },
+    { id: 'experiences', label: 'Experience' },
     { id: 'contact', label: 'Contact' }
   ];
 
@@ -61,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
           {/* Right Navigation Group (Desktop) */}
           <div className="hidden lg:flex items-center gap-4 xl:gap-6">
-            <nav className="flex items-center gap-3.5 xl:gap-5">
+            <nav className="flex items-center gap-4 xl:gap-6">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
@@ -83,6 +88,28 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   )}
                 </button>
               ))}
+
+              {/* Premium My Table / Cart Trigger Icon */}
+              <button
+                id="header-table-drawer-trigger"
+                onClick={onOpenTableDrawer}
+                className="relative p-2 ml-2 text-black/70 hover:text-[#055734] transition-colors duration-300 flex items-center justify-center cursor-pointer"
+                aria-label="Open My Table selection"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                <AnimatePresence>
+                  {preSelectedCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      className="absolute -top-0.5 -right-0.5 bg-[#055734] text-white font-mono text-[8px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm border border-white"
+                    >
+                      {preSelectedCount > 3 ? '3+' : preSelectedCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </button>
             </nav>
             
             <button
@@ -97,6 +124,28 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
           {/* Mobile Actions */}
           <div className="flex lg:hidden items-center gap-4">
+            {/* Mobile My Table Icon */}
+            <button
+              id="mobile-header-table-trigger"
+              onClick={onOpenTableDrawer}
+              className="relative p-2 text-black/70 hover:text-[#055734] transition-colors flex items-center justify-center cursor-pointer"
+              aria-label="Open My Table"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              <AnimatePresence>
+                {preSelectedCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    className="absolute top-0 right-0 bg-[#055734] text-white font-mono text-[8px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white"
+                  >
+                    {preSelectedCount > 3 ? '3+' : preSelectedCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+
             <button
               id="mobile-nav-contact"
               onClick={() => handleNavClick('contact')}

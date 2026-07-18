@@ -3,11 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Header } from './components/Header';
@@ -21,17 +16,86 @@ import { PrivateDiningView } from './components/PrivateDiningView';
 import { AboutView } from './components/AboutView';
 import { JournalView } from './components/JournalView';
 import { ContactView } from './components/ContactView';
+import { TableDrawer } from './components/TableDrawer';
 import { MenuItem } from './types';
 import { Calendar } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [preSelectedItems, setPreSelectedItems] = useState<{ item: MenuItem; quantity: number; selectedOption?: string }[]>([]);
+  const [isTableDrawerOpen, setIsTableDrawerOpen] = useState<boolean>(false);
 
   // Sync scroll on tab changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }, [activeTab]);
+
+  const addToFeast = (item: MenuItem, option?: string) => {
+    setPreSelectedItems(prev => {
+      const existingIndex = prev.findIndex(p => p.item.id === item.id && p.selectedOption === option);
+      if (existingIndex > -1) {
+        return prev.map((p, idx) => 
+          idx === existingIndex 
+            ? { ...p, quantity: p.quantity + 1 } 
+            : p
+        );
+      } else {
+        return [...prev, { item, quantity: 1, selectedOption: option }];
+      }
+    });
+    setIsTableDrawerOpen(true);
+  };
+
+  const removeFromFeast = (item: MenuItem, option?: string) => {
+    setPreSelectedItems(prev => {
+      const existingIndex = prev.findIndex(p => 
+        p.item.id === item.id && (option === undefined || p.selectedOption === option)
+      );
+      if (existingIndex > -1) {
+        if (prev[existingIndex].quantity > 1) {
+          return prev.map((p, idx) => 
+            idx === existingIndex 
+              ? { ...p, quantity: p.quantity - 1 } 
+              : p
+          );
+        } else {
+          return prev.filter((_, idx) => idx !== existingIndex);
+        }
+      }
+      return prev;
+    });
+  };
+
+  const clearItemFromFeast = (itemId: string, option?: string) => {
+    setPreSelectedItems(prev => prev.filter(p => !(p.item.id === itemId && p.selectedOption === option)));
+  };
+
+  const feastTotal = preSelectedItems.reduce((sum, current) => sum + (current.item.price * current.quantity), 0);
+
+  const handleContinueToReservation = () => {
+    setIsTableDrawerOpen(false);
+    setActiveTab('reservations');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleInquireWhatsApp = () => {
+    const listText = preSelectedItems.map(p => 
+      `• ${p.quantity} × ${p.item.name}${p.selectedOption ? ` (${p.selectedOption})` : ''} — ₦${(p.item.price * p.quantity).toLocaleString()}`
+    ).join('\n');
+    const text = `Hello MÈSI Lagos,
+I've selected a few dishes that caught my attention on your menu, and I would love to make a reservation:
+
+My Table Selections:
+${listText}
+
+Estimated Total: ₦${feastTotal.toLocaleString()}
+
+I'd appreciate it if you could confirm availability, and advise if any special pairings or options would complement this selection.
+
+Looking forward to our dining experience. Thank you!`;
+    const message = encodeURIComponent(text);
+    window.open(`https://wa.me/2349159999368?text=${message}`, '_blank');
+  };
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -42,7 +106,10 @@ export default function App() {
           <MenuView 
             setActiveTab={setActiveTab} 
             preSelectedItems={preSelectedItems} 
-            setPreSelectedItems={setPreSelectedItems} 
+            isFeastDrawerOpen={isTableDrawerOpen}
+            setIsFeastDrawerOpen={setIsTableDrawerOpen}
+            addToFeast={addToFeast}
+            removeFromFeast={removeFromFeast}
           />
         );
       case 'reservations':
@@ -73,7 +140,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-[#E6DCD6] selection:text-[#055734] flex flex-col justify-between">
       <div>
-        <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Header 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          preSelectedCount={preSelectedItems.length}
+          onOpenTableDrawer={() => setIsTableDrawerOpen(true)}
+        />
         
         {/* Main Content Pane */}
         <main className="w-full relative">
@@ -92,6 +164,19 @@ export default function App() {
       </div>
 
       <Footer setActiveTab={setActiveTab} />
+
+      {/* Global Slide-out Selections Drawer */}
+      <TableDrawer
+        isOpen={isTableDrawerOpen}
+        onClose={() => setIsTableDrawerOpen(false)}
+        preSelectedItems={preSelectedItems}
+        addToFeast={addToFeast}
+        removeFromFeast={removeFromFeast}
+        clearItemFromFeast={clearItemFromFeast}
+        feastTotal={feastTotal}
+        onContinueToReservation={handleContinueToReservation}
+        onInquireWhatsApp={handleInquireWhatsApp}
+      />
 
       {/* Floating Action Button (FAB) for Instant Reservation (visible except on booking view) */}
       <AnimatePresence>

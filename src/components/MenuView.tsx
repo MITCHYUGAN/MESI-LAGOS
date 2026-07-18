@@ -37,18 +37,23 @@ const CATEGORY_TAGLINES: Record<string, string> = {
 interface MenuViewProps {
   setActiveTab: (tab: string) => void;
   preSelectedItems: { item: MenuItem; quantity: number; selectedOption?: string }[];
-  setPreSelectedItems: React.Dispatch<React.SetStateAction<{ item: MenuItem; quantity: number; selectedOption?: string }[]>>;
+  isFeastDrawerOpen: boolean;
+  setIsFeastDrawerOpen: (open: boolean) => void;
+  addToFeast: (item: MenuItem, option?: string) => void;
+  removeFromFeast: (item: MenuItem, option?: string) => void;
 }
 
 export const MenuView: React.FC<MenuViewProps> = ({ 
   setActiveTab, 
-  preSelectedItems, 
-  setPreSelectedItems 
+  preSelectedItems,
+  isFeastDrawerOpen,
+  setIsFeastDrawerOpen,
+  addToFeast,
+  removeFromFeast
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTag, setSelectedTag] = useState<string>('All');
-  const [isFeastDrawerOpen, setIsFeastDrawerOpen] = useState<boolean>(false);
   const [customizationItem, setCustomizationItem] = useState<MenuItem | null>(null);
   const [chosenOption, setChosenOption] = useState<string>('');
 
@@ -100,42 +105,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
   }, [activeCategory, selectedTag, searchQuery]);
 
   // Feast selection helpers
-  const addToFeast = (item: MenuItem, option?: string) => {
-    setPreSelectedItems(prev => {
-      const existingIndex = prev.findIndex(p => p.item.id === item.id && p.selectedOption === option);
-      if (existingIndex > -1) {
-        const copy = [...prev];
-        copy[existingIndex].quantity += 1;
-        return copy;
-      } else {
-        return [...prev, { item, quantity: 1, selectedOption: option }];
-      }
-    });
-
-    // Simple temporary toast indicator inside the button itself
-    setIsFeastDrawerOpen(true);
-  };
-
-  const removeFromFeast = (item: MenuItem, option?: string) => {
-    setPreSelectedItems(prev => {
-      const existingIndex = prev.findIndex(p => p.item.id === item.id && p.selectedOption === option);
-      if (existingIndex > -1) {
-        const copy = [...prev];
-        if (copy[existingIndex].quantity > 1) {
-          copy[existingIndex].quantity -= 1;
-        } else {
-          copy.splice(existingIndex, 1);
-        }
-        return copy;
-      }
-      return prev;
-    });
-  };
-
-  const clearItemFromFeast = (itemId: string, option?: string) => {
-    setPreSelectedItems(prev => prev.filter(p => !(p.item.id === itemId && p.selectedOption === option)));
-  };
-
   const feastTotal = useMemo(() => {
     return preSelectedItems.reduce((sum, current) => sum + (current.item.price * current.quantity), 0);
   }, [preSelectedItems]);
@@ -146,8 +115,13 @@ export const MenuView: React.FC<MenuViewProps> = ({
 
   const handleOpenCustomizer = (item: MenuItem) => {
     if (item.options && item.options.length > 0) {
-      setCustomizationItem(item);
-      setChosenOption(item.options[0]);
+      const existing = preSelectedItems.find(p => p.item.id === item.id);
+      if (existing) {
+        addToFeast(item, existing.selectedOption);
+      } else {
+        setCustomizationItem(item);
+        setChosenOption(item.options[0]);
+      }
     } else {
       addToFeast(item);
     }
@@ -159,22 +133,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
       setCustomizationItem(null);
       setChosenOption('');
     }
-  };
-
-  const handleSendToReservation = () => {
-    setIsFeastDrawerOpen(false);
-    setActiveTab('reservations');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleShareToWhatsApp = () => {
-    const listText = preSelectedItems.map(p => 
-      `- ${p.quantity}x ${p.item.name} ${p.selectedOption ? `(${p.selectedOption})` : ''} ($${p.item.price * p.quantity})`
-    ).join('\n');
-    const message = encodeURIComponent(
-      `Hello MÈSI Lagos, I would like to inquire about a table pre-selection/feast for my upcoming visit:\n\n${listText}\n\n*Total Estimated:* $${feastTotal}\n\nPlease let me know table availability! Thank you.`
-    );
-    window.open(`https://wa.me/2349159999368?text=${message}`, '_blank');
   };
 
   return (
@@ -372,7 +330,7 @@ export const MenuView: React.FC<MenuViewProps> = ({
                                               </h4>
                                               <div className="flex-1 border-b border-dashed border-black/15 mx-3 self-end h-[4px]" />
                                               <span className="font-mono text-sm text-[#055734] font-bold shrink-0">
-                                                ${item.price}
+                                                ₦{item.price.toLocaleString()}
                                               </span>
                                             </div>
 
@@ -520,143 +478,6 @@ export const MenuView: React.FC<MenuViewProps> = ({
         )}
       </AnimatePresence>
 
-      {/* FEAST DRAWER (Slide-out menu for selected items) */}
-      <AnimatePresence>
-        {isFeastDrawerOpen && (
-          <div className="fixed inset-0 z-50 overflow-hidden">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsFeastDrawerOpen(false)}
-              className="absolute inset-0 bg-black/65 backdrop-blur-sm"
-            />
-            
-            <div className="absolute inset-y-0 right-0 max-w-lg w-full flex">
-              <motion.div
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
-                className="w-full bg-white border-l border-black/10 shadow-2xl flex flex-col justify-between"
-              >
-                {/* Header */}
-                <div className="p-6 border-b border-black/10 flex justify-between items-center bg-[#E6DCD6]/30">
-                  <div className="flex items-center gap-2">
-                    <ShoppingBag className="w-5 h-5 text-[#055734]" />
-                    <span className="font-serif text-lg font-medium text-black tracking-tight">Your Custom Social Feast</span>
-                  </div>
-                  <button 
-                    onClick={() => setIsFeastDrawerOpen(false)}
-                    className="text-black/60 hover:text-black font-mono text-[10px] tracking-widest border border-black/15 px-2.5 py-1"
-                  >
-                    CLOSE
-                  </button>
-                </div>
-
-                {/* Body / List */}
-                <div className="p-6 flex-1 overflow-y-auto">
-                  {preSelectedItems.length === 0 ? (
-                    <div className="text-center py-24 flex flex-col items-center justify-center h-full">
-                      <span className="text-4xl mb-4 opacity-40">𓎩</span>
-                      <p className="font-serif text-sm text-black/60 mb-2">Your feast selection is currently empty.</p>
-                      <p className="text-xs text-black/40 max-w-xs mx-auto">
-                        Pre-select breakfast plates, cocktails, or seafood pastas to plan your ideal luxury table dining experience.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-6">
-                      <div className="flex justify-between items-center text-[10px] font-mono text-black/50 pb-2 border-b border-black/5">
-                        <span>PRE-SELECTED COMBINATIONS</span>
-                        <button 
-                          onClick={() => setPreSelectedItems([])}
-                          className="hover:text-[#055734] flex items-center gap-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          <span>CLEAR ALL</span>
-                        </button>
-                      </div>
-
-                      {preSelectedItems.map((p, idx) => (
-                        <div key={`${p.item.id}-${p.selectedOption || idx}`} className="flex justify-between items-start gap-4">
-                          <div className="flex-1">
-                            <h4 className="font-serif text-sm font-semibold text-black">{p.item.name}</h4>
-                            {p.selectedOption && (
-                              <span className="inline-block mt-1 text-[9px] font-mono tracking-widest text-[#055734] bg-[#E6DCD6]/30 px-2 py-0.5 rounded-sm">
-                                OPTION: {p.selectedOption}
-                              </span>
-                            )}
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="text-[10px] font-mono text-black/50">${p.item.price} each</span>
-                              <span className="text-[10px] font-mono text-black/30">•</span>
-                              <span className="text-[10px] font-mono text-[#055734] font-semibold">${p.item.price * p.quantity} total</span>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col items-end gap-2 shrink-0">
-                            <div className="flex items-center bg-stone-100 rounded-sm px-1.5 py-0.5">
-                              <button
-                                onClick={() => removeFromFeast(p.item, p.selectedOption)}
-                                className="p-1 text-black/50 hover:text-black"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <span className="font-mono text-xs font-semibold px-2">{p.quantity}</span>
-                              <button
-                                onClick={() => addToFeast(p.item, p.selectedOption)}
-                                className="p-1 text-black/50 hover:text-black"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
-                            </div>
-                            <button
-                              onClick={() => clearItemFromFeast(p.item.id, p.selectedOption)}
-                              className="text-[10px] font-mono text-red-500 hover:underline"
-                            >
-                              REMOVE
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer Controls */}
-                {preSelectedItems.length > 0 && (
-                  <div className="p-6 border-t border-black/10 bg-stone-50 flex flex-col gap-4">
-                    <div className="flex justify-between items-center text-xs font-mono">
-                      <span className="text-black/50 tracking-wider">TOTAL ESTIMATED SUM</span>
-                      <span className="text-lg font-bold text-[#055734] font-mono">${feastTotal}</span>
-                    </div>
-
-                    <p className="text-[11px] font-serif text-black/50 leading-relaxed italic">
-                      Attach this selection to your table reservation. Our kitchen will note your preferences, making your arrival seamless.
-                    </p>
-
-                    <div className="flex flex-col gap-2 mt-2">
-                      <button
-                        onClick={handleSendToReservation}
-                        className="w-full bg-[#055734] text-white hover:bg-black py-4 text-center text-xs font-mono tracking-widest uppercase font-semibold flex items-center justify-center gap-2"
-                      >
-                        <span>ATTACH TO RESERVATION</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={handleShareToWhatsApp}
-                        className="w-full border border-black/35 hover:border-black text-black py-4 text-center text-xs font-mono tracking-widest uppercase flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <MessageCircle className="w-4 h-4 text-[#055734]" />
-                        <span>INQUIRE VIA WHATSAPP CONCIERGE</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
     </PageTransition>
   );
 };
